@@ -1,4 +1,4 @@
-package Attendance;
+package PrelimLabWork1;
 /*
     Attendance.java
     A simple Java Swing application for attendance tracking.
