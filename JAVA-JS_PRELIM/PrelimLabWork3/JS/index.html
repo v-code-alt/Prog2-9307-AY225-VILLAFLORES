@@ -1,0 +1,185 @@
+<!--
+    Programming Languages Used: HTML, CSS, JavaScript
+
+
+    GOAL: 
+    The program will compute the required Prelim Exam score a student must obtain 
+    in order to pass or achieve an excellent standing for the Prelim period. 
+    The computation must strictly follow the official grading breakdown defined in this document.         
+
+
+    Grading System Overview
+        Prelim Grade Composition. The Prelim Grade is computed using the following breakdown:
+
+            70% – Prelim Exam
+            30% – Class Standing
+
+        Class Standing Composition (30%). The Class Standing consists of:
+
+            40% – Attendance
+            60% – Average of Lab Works
+
+        Lab Works included:
+
+            Lab Work 1
+            Lab Work 2
+            Lab Work 3
+
+
+    Required Formulas
+        Lab Work Average 
+            (Lab 1 + Lab 2 + Lab 3) / 3
+
+        Class Standing
+            (attendance x 0.40) + (Lab Work Average x 0.60) 
+
+        Prelim Grade
+            (Prelim Exam x 0.70) + (Class Standing x 0.30)
+
+    Target Grades
+        Passing Grade: 75
+        Excellent Grade: 100
+    
+    NOTE: Your program must determine the required Prelim Exam score needed 
+          to reach each target grade based on the student’s current Class Standing.
+
+
+Requirements:
+        1. Ask the user to input:
+            - Number of attendances
+            - Lab Work 1 grade
+            - Lab Work 2 grade
+            - Lab Work 3 grade
+
+        2. Compute:
+            - Lab Work Average
+            - Class Standing
+
+        3. Required Prelim Exam score for:
+            - Passing (75)
+            - Excellent (100)
+
+        4. Display:
+            - All computed values
+            - Clear remarks explaining the student’s standing
+
+
+    Parts:
+        1. Attendance score
+        2. Individual Lab Work grades
+        3. Lab Work Average
+        4. Class Standing
+        5. Required Prelim Exam score to:
+        6. Pass the Prelim period
+        7. Achieve an Excellent grade
+
+
+    FINAL NOTES: The grading logic must exactly follow the formulas provided.
+                 Code readability, correctness, and proper formatting will be graded.
+-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prelim Grade Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- Form Container -->
+    <div class="container form-container">
+        <h1>📊 Prelim Grade Calculator</h1>
+        <p class="subtitle">Calculate your required Prelim Exam score to pass or achieve excellence.</p>
+        <div class="input-section">
+            <div class="input-group">
+                <label for="absences">Number of Absences</label>
+                <input type="number" id="absences" min="0" max="4" step="1" placeholder="Enter number of absences">
+                <div class="error" id="absences-error">Please enter a valid number of absences (0-4)</div>
+            </div>
+            <div class="input-group">
+                <label for="lab1">Lab Work 1 Grade</label>
+                <input type="number" id="lab1" min="0" max="100" step="0.01" placeholder="Enter Lab Work 1 Grade">
+                <div class="error" id="lab1-error">Please enter a valid grade (0-100)</div>
+            </div>
+            <div class="input-group">
+                <label for="lab2">Lab Work 2 Grade</label>
+                <input type="number" id="lab2" min="0" max="100" step="0.01" placeholder="Enter Lab Work 2 Grade">
+                <div class="error" id="lab2-error">Please enter a valid grade (0-100)</div>
+            </div>
+            <div class="input-group">
+                <label for="lab3">Lab Work 3 Grade</label>
+                <input type="number" id="lab3" min="0" max="100" step="0.01" placeholder="Enter Lab Work 3 Grade">
+                <div class="error" id="lab3-error">Please enter a valid grade (0-100)</div>
+            </div>
+            <button class="button" onclick="calculateGrade()">Calculate</button>
+        </div>
+    </div>
+
+    <!-- Combined Results Container -->
+    <div class="results-combined" id="results-combined" style="display:none;">
+        <div class="results-flex">
+            <div class="current-standing-container">
+                <div class="result-section" style="margin-bottom: 18px;">
+                    <h3 style="margin-bottom: 10px;">📝 Your Current Standing</h3>
+                    <div class="attendance-container">
+                        <div class="result-item" style="flex-direction: column; align-items: flex-start; gap: 0;">
+                            <span class="result-label">Attendance Score</span>
+                            <span class="result-value" id="display-attendance">-</span>
+                            <span class="result-formula" id="display-absences" style="color:#666; font-size:13px; margin-left:2px; margin-top:2px;"></span>
+                        </div>
+                    </div>
+                    <div class="labworks-container" style="margin: 18px 0;">
+                        <div class="result-item">
+                            <span class="result-label">Lab Work 1</span>
+                            <span class="result-value" id="display-lab1">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Lab Work 2</span>
+                            <span class="result-value" id="display-lab2">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Lab Work 3</span>
+                            <span class="result-value" id="display-lab3">-</span>
+                        </div>
+                        <div class="result-item" style="flex-direction: column; align-items: flex-start; gap: 0;">
+                            <span class="result-label">Lab Work Average</span>
+                            <span class="result-value" id="display-lab-avg">-</span>
+                            <span class="result-formula" id="display-lab-avg-formula" style="color:#666; font-size:13px; margin-left:2px; margin-top:2px;"></span>
+                        </div>
+                    </div>
+                    <div class="classstanding-container">
+                        <div class="result-item" style="flex-direction: column; align-items: flex-start; gap: 0;">
+                            <span class="result-label">Class Standing</span>
+                            <span class="result-value" id="display-class-standing">-</span>
+                            <span class="result-formula" id="display-class-standing-formula" style="color:#666; font-size:13px; margin-left:2px; margin-top:2px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="required-scores-container" style="margin-top: 0;">
+                <div class="target-section">
+                    <h3>🎯 Required Prelim Exam Scores</h3>
+                    <div class="target-item">
+                        <div class="target-grade">To Pass (75)</div>
+                        <div class="target-score" id="pass-score">-</div>
+                        <div class="remark" id="pass-remark"></div>
+                    </div>
+                    <div class="target-item">
+                        <div class="target-grade">For Excellent Standing (100)</div>
+                        <div class="target-score" id="excellent-score">-</div>
+                        <div class="remark" id="excellent-remark"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="return-btn-container" style="display:none; text-align:center; margin-top:20px; width:100%;">
+            <button class="button" id="return-btn" onclick="returnToForm()">Return</button>
+        </div>
+    </div>
+</body>
+</html>

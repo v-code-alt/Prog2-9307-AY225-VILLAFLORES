@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Authentication System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .welcome-msg {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-signup {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-signup:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-login {
+            background: #764ba2;
+            color: white;
+        }
+
+        .btn-login:hover {
+            background: #653a8a;
+            transform: translateY(-2px);
+        }
+
+        .logged-in {
+            display: none;
+        }
+
+        .user-info {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .user-info h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        .btn-download {
+            background: #27ae60;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .btn-download:hover {
+            background: #229954;
+        }
+
+        .btn-admin {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-admin:hover {
+            background: #e67e22;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            background: #f39c12;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logged-out">
+            <h1>Welcome!</h1>
+            <p class="welcome-msg">Please sign up or log in to continue</p>
+            <div class="btn-group">
+                <a href="signup.html" class="btn btn-signup">Sign Up</a>
+                <a href="login.html" class="btn btn-login">Log In</a>
+            </div>
+        </div>
+        
+        <div class="logged-in">
+            <h1>Welcome Back!</h1>
+            <div class="user-info">
+                <h2 id="userName"></h2>
+                <p>Logged in at: <span id="timestamp"></span></p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-download" onclick="downloadUserData()">Download My Data</button>
+                <button class="btn btn-admin" id="adminBtn" style="display: none;" onclick="showAdminPanel()">Admin: View All Records</button>
+                <button class="btn btn-logout" onclick="logout()">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkLoginStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (currentUser) {
+                document.querySelector('.logged-out').style.display = 'none';
+                document.querySelector('.logged-in').style.display = 'block';
+                
+                let displayName = `${currentUser.firstName} ${currentUser.lastName}`;
+                if (currentUser.username === 'admin') {
+                    displayName += '<span class="admin-badge">ADMIN</span>';
+                    document.getElementById('adminBtn').style.display = 'block';
+                }
+                
+                document.getElementById('userName').innerHTML = displayName;
+                document.getElementById('timestamp').textContent = currentUser.timestamp;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            location.reload();
+        }
+
+        function formatTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        function downloadUserData() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const content = `First Name: ${currentUser.firstName}\nLast Name: ${currentUser.lastName}\nTimestamp: ${currentUser.timestamp}`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `user_data_${currentUser.username}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function showAdminPanel() {
+            window.location.href = 'admin.html';
+        }
+
+        checkLoginStatus();
+    </script>
+</body>
+</html>

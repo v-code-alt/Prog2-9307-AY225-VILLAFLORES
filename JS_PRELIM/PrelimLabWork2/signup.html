@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            cursor: pointer;
+            user-select: none;
+            color: #666;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-signup {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-signup:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-back:hover {
+            background: #7f8c8d;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success {
+            color: #27ae60;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sign Up</h1>
+        <div class="success" id="successMsg">Account created successfully!</div>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" required>
+                <div class="error" id="firstNameError">Please enter your first name</div>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" required>
+                <div class="error" id="lastNameError">Please enter your last name</div>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required>
+                <div class="error" id="usernameError">Username already exists</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" required>
+                    <span class="toggle-password" onclick="togglePassword()">👁️</span>
+                </div>
+                <div class="error" id="passwordError">Password must be at least 4 characters</div>
+            </div>
+
+            <button type="submit" class="btn btn-signup">Sign Up</button>
+            <button type="button" class="btn btn-back" onclick="goBack()">Back</button>
+        </form>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Audio helper with Web Audio fallback
+        function synthesizeBeep(type = 'correct') {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = type === 'correct' ? 'sine' : 'triangle';
+                o.frequency.value = type === 'correct' ? 880 : 220;
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.start();
+                g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.2);
+                setTimeout(() => { o.stop(); ctx.close(); }, 250);
+            } catch (e) {}
+        }
+
+        function playBeep(type = 'correct') {
+            const id = type === 'correct' ? 'beepCorrect' : 'beepIncorrect';
+            const el = document.getElementById(id);
+            if (el && typeof el.play === 'function') {
+                el.play().catch(() => synthesizeBeep(type));
+            } else {
+                synthesizeBeep(type);
+            }
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+
+            let isValid = true;
+
+            if (!firstName) {
+                document.getElementById('firstNameError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!lastName) {
+                document.getElementById('lastNameError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!username) {
+                document.getElementById('usernameError').textContent = 'Please enter a username';
+                document.getElementById('usernameError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (password.length < 4) {
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!isValid) { playBeep('incorrect'); return; }
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            if (users.find(u => u.username === username)) {
+                document.getElementById('usernameError').style.display = 'block';
+                playBeep('incorrect');
+                return;
+            }
+
+            const newUser = {
+                firstName,
+                lastName,
+                username,
+                password
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            playBeep('correct');
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('signupForm').reset();
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        });
+    </script>
+
+    <audio id="beepCorrect" src="audio/Beep.mp3" preload="auto"></audio>
+    <audio id="beepIncorrect" src="audio/Wrong Buzzer - Sound Effect.mp3" preload="auto"></audio>
+</body> 
+</html>
