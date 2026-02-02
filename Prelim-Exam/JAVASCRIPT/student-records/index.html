@@ -1,31 +1,385 @@
+<!--Joellen T. Villaflores 25-0775-853-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Student Records - Joellen T. Villaflores 25-0775-853</title>
     <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
-        th { background: #f0f0f0; }
-        form { margin: 16px 0; }
-        footer, h1 { margin-top: 24px; text-align: center; }
+        :root {
+            --bg:        #efe7e7;
+            --header:     #7a201e;
+            --gold:       #f9d460;
+            --gold-dark:  #f0c224;
+            --accent:     #8f7e55;
+            --text:       #2d1f1a;
+            --border:     #d4c4b8;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        h1 {
+            color: var(--header);
+            text-align: center;
+            margin-bottom: 0.6em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        input {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        input#searchInput {
+            flex: 1 1 300px;
+            max-width: 420px;
+        }
+
+        button {
+            background: var(--gold);
+            color: var(--text);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        button:hover {
+            background: var(--gold-dark);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0 12px;
+        }
+
+        .table-header h2 {
+            margin: 0;
+            color: var(--header);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e8dede;
+        }
+
+        th {
+            background: var(--header);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background: #8a2a27;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f5f3;
+        }
+
+        tr:hover {
+            background: #fff8e8;
+        }
+
+        td[contenteditable="true"] {
+            background: #fffef5;
+            cursor: cell;
+        }
+
+        td[contenteditable="true"]:focus {
+            outline: 2px solid var(--gold);
+            background: white;
+        }
+
+        .delete-btn {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c62839;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
-    <h1>Student Records - Joellen T. Villaflores 25-0775-853</h1>
-    <form onsubmit="addStudent(); return false;">
-        <input id="id" placeholder="ID" required>
-        <input id="name" placeholder="Name" required>
-        <input id="grade" placeholder="Grade" required>
-        <button type="submit">Add</button>
-    </form>
-    <table>
+
+<div class="container">
+    <h1>Student Records</h1>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search student name, ID, or grade…" />
+
+        <input id="StudentID"        placeholder="Student ID"        required />
+        <input id="first_name"       placeholder="First Name"        required />
+        <input id="last_name"        placeholder="Last Name"         required />
+        <input id="LAB_WORK_1"       type="number" min="0" max="100" placeholder="Lab 1" />
+        <input id="LAB_WORK_2"       type="number" min="0" max="100" placeholder="Lab 2" />
+        <input id="LAB_WORK_3"       type="number" min="0" max="100" placeholder="Lab 3" />
+        <input id="PRELIM_EXAM"      type="number" min="0" max="100" placeholder="Prelim Exam" />
+        <input id="ATTENDANCE_GRADE" type="number" min="0" max="100" placeholder="Attendance" />
+
+        <button onclick="addStudent()">Add Student</button>
+        <button onclick="exportToCSV()">Export CSV</button>
+    </div>
+
+    <div class="table-header">
+        <h2>Student Records</h2>
+        <button id="toggleBtn" onclick="toggleTable()">Hide Table ▲</button>
+    </div>
+
+    <table id="studentTable">
         <thead>
-            <tr><th>ID</th><th>Name</th><th>Grade</th><th>Action</th></tr>
+            <tr>
+                <th onclick="sortTable(0)">StudentID</th>
+                <th onclick="sortTable(1)">First Name</th>
+                <th onclick="sortTable(2)">Last Name</th>
+                <th onclick="sortTable(3)">LAB WORK 1</th>
+                <th onclick="sortTable(4)">LAB WORK 2</th>
+                <th onclick="sortTable(5)">LAB WORK 3</th>
+                <th onclick="sortTable(6)">PRELIM EXAM</th>
+                <th onclick="sortTable(7)">ATTENDANCE GRADE</th>
+                <th>Action</th>
+            </tr>
         </thead>
-        <tbody id="student-tbody"></tbody>
+        <tbody id="studentBody"></tbody>
     </table>
-    <footer>Joellen T. Villaflores | Student ID: 25-0775-853</footer>
-    <script src="script.js"></script>
+</div>
+
+<script>
+// ────────────────────────────────────────────────
+// Paste your FULL CSV data here
+// ────────────────────────────────────────────────
+const csvData = `StudentID,first_name,last_name,LAB WORK 1,LAB WORK 2,LAB WORK 3,PRELIM EXAM,ATTENDANCE GRADE
+073900438,Osbourne,Wakenshaw,69,5,52,12,78
+114924014,Albie,Gierardi,58,92,16,57,97
+111901632,Eleen,Pentony,43,81,34,36,16
+084000084,Arie,Okenden,31,5,14,39,99
+272471551,Alica,Muckley,49,66,97,3,95
+104900721,Jo,Burleton,98,94,33,13,29
+111924392,Cam,Akram,44,84,17,16,24
+292970744,Celine,Brosoli,3,15,71,83,45
+107004352,Alan,Belfit,31,51,36,70,48
+071108313,Jeanette,Gilvear,4,78,15,69,69
+... paste ALL remaining rows here ...
+064100852,Carie,Rassell,55,56,31,39,15`;
+
+// ────────────────────────────────────────────────
+
+let students = [];
+
+function parseCSV() {
+    const lines = csvData.trim().split('\n');
+    lines.shift(); // remove header
+    students = lines.map(line => {
+        const [id, fname, lname, lab1, lab2, lab3, prelim, att] = line.split(',');
+        return {
+            StudentID: id?.trim() || '',
+            first_name: fname?.trim() || '',
+            last_name: lname?.trim() || '',
+            'LAB WORK 1': lab1?.trim() || '0',
+            'LAB WORK 2': lab2?.trim() || '0',
+            'LAB WORK 3': lab3?.trim() || '0',
+            'PRELIM EXAM': prelim?.trim() || '0',
+            'ATTENDANCE GRADE': att?.trim() || '0'
+        };
+    });
+}
+
+function renderTable(filter = '') {
+    const tbody = document.getElementById('studentBody');
+    tbody.innerHTML = '';
+
+    const lowerFilter = filter.toLowerCase();
+
+    students.forEach((student, index) => {
+        const values = Object.values(student).slice(0,8).join(' ').toLowerCase();
+        if (lowerFilter && !values.includes(lowerFilter)) return;
+
+        const tr = document.createElement('tr');
+
+        ['StudentID','first_name','last_name','LAB WORK 1','LAB WORK 2','LAB WORK 3','PRELIM EXAM','ATTENDANCE GRADE']
+            .forEach(key => {
+                const td = document.createElement('td');
+                td.contentEditable = true;
+                td.textContent = student[key];
+                td.dataset.key = key;
+                td.dataset.index = index;
+                td.onblur = handleEdit;
+                tr.appendChild(td);
+            });
+
+        const actionTd = document.createElement('td');
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = 'Delete';
+        delBtn.onclick = () => {
+            if (confirm('Delete this student record?')) {
+                students.splice(index, 1);
+                renderTable(document.getElementById('searchInput').value);
+            }
+        };
+        actionTd.appendChild(delBtn);
+        tr.appendChild(actionTd);
+
+        tbody.appendChild(tr);
+    });
+}
+
+function handleEdit(e) {
+    const td = e.target;
+    const index = td.dataset.index;
+    const key = td.dataset.key;
+    students[index][key] = td.textContent.trim();
+}
+
+function addStudent() {
+    const id    = document.getElementById('StudentID').value.trim();
+    const fname = document.getElementById('first_name').value.trim();
+    const lname = document.getElementById('last_name').value.trim();
+
+    if (!id || !fname || !lname) {
+        alert('Student ID, First Name and Last Name are required.');
+        return;
+    }
+
+    const newStudent = {
+        StudentID: id,
+        first_name: fname,
+        last_name: lname,
+        'LAB WORK 1': document.getElementById('LAB_WORK_1').value.trim() || '0',
+        'LAB WORK 2': document.getElementById('LAB_WORK_2').value.trim() || '0',
+        'LAB WORK 3': document.getElementById('LAB_WORK_3').value.trim() || '0',
+        'PRELIM EXAM': document.getElementById('PRELIM_EXAM').value.trim() || '0',
+        'ATTENDANCE GRADE': document.getElementById('ATTENDANCE_GRADE').value.trim() || '0'
+    };
+
+    students.push(newStudent);
+    renderTable(document.getElementById('searchInput').value);
+
+    // Clear form
+    document.querySelectorAll('.controls input').forEach(inp => inp.value = '');
+}
+
+function toggleTable() {
+    const table = document.getElementById('studentTable');
+    const btn = document.getElementById('toggleBtn');
+    if (table.classList.contains('hidden')) {
+        table.classList.remove('hidden');
+        btn.textContent = 'Hide Table ▲';
+    } else {
+        table.classList.add('hidden');
+        btn.textContent = 'Show Table ▼';
+    }
+}
+
+function sortTable(colIndex) {
+    const tbody = document.getElementById('studentBody');
+    const rows = Array.from(tbody.rows);
+
+    const isNumericCol = colIndex >= 3 && colIndex <= 7;
+
+    const dir = rows[0]?.dataset?.sortDir === 'asc' ? 'desc' : 'asc';
+
+    rows.sort((a, b) => {
+        let x = a.cells[colIndex].textContent.trim();
+        let y = b.cells[colIndex].textContent.trim();
+
+        if (isNumericCol) {
+            x = parseFloat(x) || 0;
+            y = parseFloat(y) || 0;
+            return dir === 'asc' ? x - y : y - x;
+        }
+
+        return dir === 'asc'
+            ? x.localeCompare(y)
+            : y.localeCompare(x);
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+
+    // Remember sort direction for next click
+    if (rows[0]) rows[0].dataset.sortDir = dir;
+}
+
+function exportToCSV() {
+    let csv = "StudentID,first_name,last_name,LAB WORK 1,LAB WORK 2,LAB WORK 3,PRELIM EXAM,ATTENDANCE GRADE\n";
+
+    students.forEach(s => {
+        csv += [
+            s.StudentID,
+            s.first_name,
+            s.last_name,
+            s['LAB WORK 1'],
+            s['LAB WORK 2'],
+            s['LAB WORK 3'],
+            s['PRELIM EXAM'],
+            s['ATTENDANCE GRADE']
+        ].map(v => `"${(v || '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'student_records.csv';
+    link.click();
+}
+
+// ── Initialize ────────────────────────────────────────────────────────
+parseCSV();
+renderTable();
+
+document.getElementById('searchInput').addEventListener('input', e => {
+    renderTable(e.target.value);
+});
+</script>
 </body>
 </html>
