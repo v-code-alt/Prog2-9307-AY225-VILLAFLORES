@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Records - Joellen T. Villaflores 25-0775-853</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+        th { background: #f0f0f0; }
+        form { margin: 16px 0; }
+        footer, h1 { margin-top: 24px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Student Records - Joellen T. Villaflores 25-0775-853</h1>
+    <form onsubmit="addStudent(); return false;">
+        <input id="id" placeholder="ID" required>
+        <input id="name" placeholder="Name" required>
+        <input id="grade" placeholder="Grade" required>
+        <button type="submit">Add</button>
+    </form>
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Name</th><th>Grade</th><th>Action</th></tr>
+        </thead>
+        <tbody id="student-tbody"></tbody>
+    </table>
+    <footer>Joellen T. Villaflores | Student ID: 25-0775-853</footer>
+    <script src="script.js"></script>
+</body>
+</html>
