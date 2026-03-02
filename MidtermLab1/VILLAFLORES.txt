@@ -1,0 +1,15 @@
+CSV Export Analytics Report
+Scenario:
+Manager wants exported analytics summary.
+
+Requirements:
+Generate summary report
+Export results into new CSV file:
+summary_report.csv
+File must include headers
+
+Java:
+Use FileWriter
+
+JavaScript:
+Use fs.writeFile()
